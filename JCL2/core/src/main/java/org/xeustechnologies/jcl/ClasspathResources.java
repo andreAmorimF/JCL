@@ -91,6 +91,7 @@ public class ClasspathResources extends JarResources {
                 if (logger.isLoggable( Level.FINEST ))
                     logger.finest( "Loading resource: " + entryName );
 
+                jarEntryURLs.put( entryName, resourceFile.toURI().toURL());
                 jarEntryContents.put( entryName, content );
             }
         } catch (IOException e) {
@@ -144,6 +145,7 @@ public class ClasspathResources extends JarResources {
             if (logger.isLoggable( Level.FINEST ))
                 logger.finest( "Loading remote resource." );
 
+            jarEntryURLs.put( url.toString(), url);
             jarEntryContents.put( url.toString(), content );
         } catch (IOException e) {
             throw new JclException( e );
@@ -195,6 +197,7 @@ public class ClasspathResources extends JarResources {
                 if (logger.isLoggable( Level.FINEST ))
                     logger.finest( "Loading class: " + entryName );
 
+                jarEntryURLs.put( entryName, cf.toURI().toURL());
                 jarEntryContents.put( entryName, content );
             }
         } catch (IOException e) {
@@ -296,6 +299,7 @@ public class ClasspathResources extends JarResources {
         if (jarEntryContents.containsKey( resource )) {
             if (logger.isLoggable( Level.FINEST ))
                 logger.finest( "Removing resource " + resource );
+            jarEntryURLs.remove(resource);
             jarEntryContents.remove( resource );
         } else {
             throw new ResourceNotFoundException( resource, "Resource not found in local ClasspathResources" );

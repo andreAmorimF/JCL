@@ -28,6 +28,7 @@ package org.xeustechnologies.jcl;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,6 +51,7 @@ import org.xeustechnologies.jcl.exception.JclException;
  */
 public class JarResources {
 
+	protected Map<String, URL> jarEntryURLs;
     protected Map<String, byte[]> jarEntryContents;
     protected boolean collisionAllowed;
 
@@ -59,8 +61,23 @@ public class JarResources {
      * Default constructor
      */
     public JarResources() {
+    	jarEntryURLs = new HashMap<String, URL>();
         jarEntryContents = new HashMap<String, byte[]>();
         collisionAllowed = Configuration.suppressCollisionException();
+    }
+
+    /**
+     * @param name
+     * @return URL
+     */
+    public URL getResourceURL(String name) {
+    	URL url = jarEntryURLs.get(name);
+    	
+        if (url == null) {
+            throw new JclException( "non-URL accessible resource" );
+        }
+            
+        return url;
     }
 
     /**
@@ -91,8 +108,10 @@ public class JarResources {
 
         FileInputStream fis = null;
         try {
-            fis = new FileInputStream( jarFile );
-            loadJar( fis );
+            File file = new File( jarFile );
+            URL baseUrl = new URL("jar:" + file.toURI().toString() + "!/");
+            fis = new FileInputStream( file );
+            loadJar(fis, baseUrl);
         } catch (IOException e) {
             throw new JclException( e );
         } finally {
@@ -116,8 +135,9 @@ public class JarResources {
 
         InputStream in = null;
         try {
+        	URL baseUrl = new URL("jar:" + url.toString() + "!/");
             in = url.openStream();
-            loadJar( in );
+            loadJar( in, baseUrl );
         } catch (IOException e) {
             throw new JclException( e );
         } finally {
@@ -129,12 +149,16 @@ public class JarResources {
                 }
         }
     }
+    
+    public void loadJar(InputStream jarStream) {
+    	loadJar(jarStream, null);
+    }
 
     /**
      * Load the jar contents from InputStream
      * 
      */
-    public void loadJar(InputStream jarStream) {
+    public void loadJar(InputStream jarStream, URL baseUrl) {
 
         BufferedInputStream bis = null;
         JarInputStream jis = null;
@@ -175,6 +199,9 @@ public class JarResources {
                 }
 
                 // add to internal resource HashMap
+                if (baseUrl != null)
+                	jarEntryURLs.put( jarEntry.getName(), new URL(baseUrl, jarEntry.getName()) );
+                
                 jarEntryContents.put( jarEntry.getName(), out.toByteArray() );
 
                 if (logger.isLoggable( Level.FINEST ))
