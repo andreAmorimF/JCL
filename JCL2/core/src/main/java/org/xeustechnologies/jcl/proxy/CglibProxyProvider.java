@@ -26,6 +26,7 @@
 
 package org.xeustechnologies.jcl.proxy;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +43,14 @@ import org.xeustechnologies.jcl.JclUtils;
  * @author Kamran Zafar
  * 
  */
-public class CglibProxyProvider implements ProxyProvider {
+public class CglibProxyProvider implements ProxyProvider, Serializable {
 
-    private class CglibProxyHandler implements MethodInterceptor {
-        private final Object delegate;
+	private static final long serialVersionUID = 2532426119533460788L;
+
+	private class CglibProxyHandler implements MethodInterceptor, Serializable {
+
+		private static final long serialVersionUID = 692569828615649738L;
+		private final Object delegate;
 
         public CglibProxyHandler(Object delegate) {
             this.delegate = delegate;
