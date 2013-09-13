@@ -1,6 +1,7 @@
 package org.xeustechnologies.jcl.test;
 
 import java.io.InputStream;
+import java.net.URL;
 
 public class TestLoader extends org.xeustechnologies.jcl.ProxyClassLoader {
 
@@ -13,5 +14,11 @@ public class TestLoader extends org.xeustechnologies.jcl.ProxyClassLoader {
     public InputStream loadResource(String name) {
         return null;
     }
+
+	@Override
+	public URL findResource(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
