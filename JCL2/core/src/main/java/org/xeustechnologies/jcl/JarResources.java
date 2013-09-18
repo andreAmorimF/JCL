@@ -74,7 +74,8 @@ public class JarResources {
     	URL url = jarEntryURLs.get(name);
     	
         if (url == null) {
-            throw new JclException( "non-URL accessible resource" );
+        	 if (logger.isLoggable( Level.FINEST ))
+                 logger.finest( "non-URL accessible resource : " + name );
         }
             
         return url;
